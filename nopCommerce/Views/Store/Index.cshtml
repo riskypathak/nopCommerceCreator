@@ -1,0 +1,25 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+</head>
+<body>
+    <div>
+        @if (ViewBag.Message != "ERROR")
+        {
+            @{ Response.Redirect(ViewBag.Message);}
+        }
+        else
+        { 
+        <h1><span style="color:red">Error while build your store</span></h1>
+        }
+    </div>
+</body>
+</html>
