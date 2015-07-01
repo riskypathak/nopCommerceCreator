@@ -1,6 +1,7 @@
 ﻿@model nopCommerce.Models.RegisterModel
 @{
     ViewBag.Title = "Register";
+    Layout = "~/Views/Shared/_Layout1.cshtml";
 }
 
 <hgroup class="title">
@@ -24,14 +25,11 @@
                 @Html.PasswordFor(m => m.Password)
             </li>
             <li>
-                @Html.LabelFor(m => m.ConfirmPassword)
-                @Html.PasswordFor(m => m.ConfirmPassword)
+                @Html.LabelFor(m => m.StoreName)
+                @Html.TextBoxFor(m => m.StoreName)
             </li>
         </ol>
         <input type="submit" value="Register" />
     </fieldset>
 }
 
-@section Scripts {
-    @Scripts.Render("~/bundles/jqueryval")
-}

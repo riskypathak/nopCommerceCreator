@@ -30,7 +30,7 @@ namespace nopCommerce.Models
     public class RegisterExternalLoginModel
     {
         [Required]
-        [Display(Name = "User name")]
+        [Display(Name = "Email")]
         public string UserName { get; set; }
 
         public string ExternalLoginData { get; set; }
@@ -58,7 +58,7 @@ namespace nopCommerce.Models
     public class LoginModel
     {
         [Required]
-        [Display(Name = "User name")]
+        [Display(Name = "Email")]
         public string UserName { get; set; }
 
         [Required]
@@ -73,7 +73,8 @@ namespace nopCommerce.Models
     public class RegisterModel
     {
         [Required]
-        [Display(Name = "User name")]
+        [Display(Name = "Email")]
+        [EmailAddress(ErrorMessage = "Invalid Email Address")]
         public string UserName { get; set; }
 
         [Required]
@@ -82,10 +83,9 @@ namespace nopCommerce.Models
         [Display(Name = "Password")]
         public string Password { get; set; }
 
-        [DataType(DataType.Password)]
-        [Display(Name = "Confirm password")]
-        [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
-        public string ConfirmPassword { get; set; }
+        [Required]
+        [Display(Name = "Store Name")]
+        public string StoreName { get; set; }
     }
 
     public class ExternalLogin

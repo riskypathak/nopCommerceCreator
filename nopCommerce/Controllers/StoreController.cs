@@ -3,44 +3,52 @@ using nopCommerce.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.UI;
+using nopCommerce;
+using System.Data.SqlClient;
+using System.Configuration;
 
 namespace nopCommerce.Controllers
 {
     public class StoreController : Controller
     {
+        public SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString);
+        public SqlCommand cmd;
         //
         // GET: /Store/
-        public void StartStore()
+        public string StartStore(StoreDetails oStoreDetails)
         {
-            HttpContext.Server.ScriptTimeout = 60000;
-            StoreDetails oStoreDetails = new StoreDetails();
-            oStoreDetails.Email = "TestMail@gmail.com";
-            oStoreDetails.StoreName = "Mystore6";
-            oStoreDetails.StorePassword = "1234";
-            Index(oStoreDetails);
+           
+            //StoreDetails oStoreDetails = new StoreDetails();
+            //oStoreDetails.Email = "TestMail@gmail.com";
+            //oStoreDetails.StoreName = "Mystore6";
+            //oStoreDetails.StorePassword = "1234";
+            //Index(oStoreDetails);
+            string applicationDirectoryPath = System.Configuration.ConfigurationManager.AppSettings["ParentPath"] + "\\" + oStoreDetails.StoreName;
+
+            if (!Directory.Exists(applicationDirectoryPath))
+            {
+                Directory.CreateDirectory(applicationDirectoryPath);
+            }
+            string sourcePath = System.Configuration.ConfigurationManager.AppSettings["SourcePath"];
+            CopyPackageContent(sourcePath, applicationDirectoryPath);
+            AddApplication("Default Web Site", "/" + oStoreDetails.StoreName, "DefaultAppPool", "/", applicationDirectoryPath, "", "");
+            string status = WebPageCall(System.Configuration.ConfigurationManager.AppSettings["MainDomain"] + oStoreDetails.StoreName + "/install", oStoreDetails);
+            return status;
         }
 
         public ActionResult Index(StoreDetails oStoreDetails)
         {
+           
             //try
             //{
-                string applicationDirectoryPath = System.Configuration.ConfigurationManager.AppSettings["ParentPath"] + "\\" + oStoreDetails.StoreName;
-
-                if (!Directory.Exists(applicationDirectoryPath))
-                {
-                    Directory.CreateDirectory(applicationDirectoryPath);
-                }
-                string sourcePath = System.Configuration.ConfigurationManager.AppSettings["SourcePath"];
-                CopyPackageContent(sourcePath, applicationDirectoryPath);
-                AddApplication("Default Web Site", "/" + oStoreDetails.StoreName, "DefaultAppPool", "/", applicationDirectoryPath, "", "");
-                string status = WebPageCall(System.Configuration.ConfigurationManager.AppSettings["MainDomain"] + oStoreDetails.StoreName + "/install", oStoreDetails);
-                Response.Redirect(status,false);
+                
             //}
             //catch(Exception ex) 
             //{
@@ -265,6 +273,52 @@ namespace nopCommerce.Controllers
 
         }
 
+        #endregion
+
+        #region [Store Name From DB]
+        public DataTable GetStoreName(string storeName,string userName)
+        {
+            SqlDataAdapter adp;
+            DataTable dt = new DataTable();
+            adp = new SqlDataAdapter("SP_GET_STORENAME", con);
+            adp.SelectCommand.Parameters.AddWithValue("@StoreName", storeName);
+            adp.SelectCommand.Parameters.AddWithValue("@UserName", userName);
+            adp.SelectCommand.CommandType = CommandType.StoredProcedure;
+            dt = new DataTable();
+            adp.Fill(dt);
+            return dt;            
+        }
+        #endregion
+
+        #region [Store Name]
+        public int SaveStoreName(string storeName, string userName)
+        {
+
+            int iRowAffected = 0;
+            cmd = new SqlCommand("SP_AD_STORENAME", con);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@StoreName", SqlDbType.NVarChar).Value = storeName;
+            cmd.Parameters.AddWithValue("@UserName", SqlDbType.NVarChar).Value = userName;
+            try
+            {
+                con.Open();
+                iRowAffected = cmd.ExecuteNonQuery();
+
+            }
+            catch (Exception oException)
+            {
+                throw oException;
+            }
+            finally
+            {
+                con.Close();
+                cmd.Dispose();
+            }
+
+            return iRowAffected;
+
+
+        }
         #endregion
 
     }

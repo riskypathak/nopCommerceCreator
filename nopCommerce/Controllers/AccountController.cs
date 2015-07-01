@@ -10,6 +10,7 @@ using Microsoft.Web.WebPages.OAuth;
 using WebMatrix.WebData;
 using nopCommerce.Filters;
 using nopCommerce.Models;
+using System.Data;
 
 namespace nopCommerce.Controllers
 {
@@ -74,14 +75,32 @@ namespace nopCommerce.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Register(RegisterModel model)
         {
+            HttpContext.Server.ScriptTimeout = 60000;
             if (ModelState.IsValid)
             {
                 // Attempt to register the user
                 try
                 {
-                    WebSecurity.CreateUserAndAccount(model.UserName, model.Password);
-                    WebSecurity.Login(model.UserName, model.Password);
-                    return RedirectToAction("Index", "Home");
+                    DataTable dt = new DataTable();
+                    dt = new StoreController().GetStoreName(model.StoreName, model.UserName);
+                    if (dt.Rows.Count > 0)
+                    {
+                        ModelState.AddModelError("", "Store name already exist");
+                    }
+                    else
+                    {
+                        WebSecurity.CreateUserAndAccount(model.UserName, model.Password);
+                        WebSecurity.Login(model.UserName, model.Password);
+                        new StoreController().SaveStoreName(model.StoreName, model.UserName);
+                        StoreDetails oStoreDetails = new StoreDetails();
+                        oStoreDetails.Email = model.UserName;
+                        oStoreDetails.StorePassword = model.Password;
+                        oStoreDetails.StoreName = model.StoreName;
+                        string URL;
+                        URL= new StoreController().StartStore(oStoreDetails);
+                        //return RedirectToAction("Index", "Home");
+                        Response.Redirect(URL, false);
+                    }
                 }
                 catch (MembershipCreateUserException e)
                 {
@@ -107,7 +126,7 @@ namespace nopCommerce.Controllers
             if (ownerAccount == User.Identity.Name)
             {
                 // Use a transaction to prevent the user from deleting their last login credential
-                using (var scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Serializable }))
+                using (var scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.Serializable }))
                 {
                     bool hasLocalAccount = OAuthWebSecurity.HasLocalAccount(WebSecurity.GetUserId(User.Identity.Name));
                     if (hasLocalAccount || OAuthWebSecurity.GetAccountsFromUserName(User.Identity.Name).Count > 1)
