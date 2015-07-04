@@ -287,6 +287,7 @@
     <Content Include="gallery.html" />
     <Content Include="Global.asax" />
     <Content Include="img\404.png" />
+    <Content Include="img\ajax-loading.gif" />
     <Content Include="img\apple_icons_114x114.png" />
     <Content Include="img\apple_icons_57x57.png" />
     <Content Include="img\apple_icons_72x72.png" />

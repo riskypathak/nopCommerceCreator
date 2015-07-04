@@ -187,7 +187,16 @@ namespace nopCommerce.Controllers
             bool Success = doc.DocumentNode.OuterHtml.Contains("Your store");
             if (Success)
             {
-                //Utility.ApplicationLog("AdiGlobal login sucessful");
+                //NameValueCollection formDataAdmin = new NameValueCollection();
+                //URL = System.Configuration.ConfigurationManager.AppSettings["MainDomain"] + oStoreDetails.StoreName + "/login?ReturnUrl=" + oStoreDetails.StoreName + "/admin";
+                //HtmlAgilityPack.HtmlDocument document = GetWebRequest(URL);
+                //formDataAdmin = GetFormData(document);
+               
+                //formDataAdmin["Email"] = AdminEmail;
+                //formDataAdmin["Password"] = AdminPassword;
+                //formDataAdmin["RememberMe"] = "false";
+                //HtmlAgilityPack.HtmlDocument docAdmin = PostRequest(URL, null, formDataAdmin);
+                //URL = System.Configuration.ConfigurationManager.AppSettings["MainDomain"] + oStoreDetails.StoreName + "/admin";
                 return (URL);
             }
             else

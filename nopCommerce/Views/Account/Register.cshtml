@@ -5,31 +5,29 @@
 }
 
 <hgroup class="title">
-    <h1>@ViewBag.Title.</h1>
-    <h2>Create a new account.</h2>
+    <h1>@ViewBag.Title.</h1> 
+    @Html.ValidationSummary(true)  
 </hgroup>
 
-@using (Html.BeginForm()) {
+@using (Html.BeginForm("Register", "Account", FormMethod.Post, new { id = "Regform" }))
+{
     @Html.AntiForgeryToken()
-    @Html.ValidationSummary()
+  
 
-    <fieldset>
-        <legend>Registration Form</legend>
-        <ol>
-            <li>
-                @Html.LabelFor(m => m.UserName)
-                @Html.TextBoxFor(m => m.UserName)
-            </li>
-            <li>
-                @Html.LabelFor(m => m.Password)
-                @Html.PasswordFor(m => m.Password)
-            </li>
-            <li>
-                @Html.LabelFor(m => m.StoreName)
-                @Html.TextBoxFor(m => m.StoreName)
-            </li>
-        </ol>
-        <input type="submit" value="Register" />
-    </fieldset>
+   
+               <div class="fleft">
+                @Html.TextBoxFor(m => m.UserName,new { @placeholder = "Email*" })@Html.ValidationMessageFor(m => m.UserName)</div>
+           
+              <div class="fleft"> 
+                @Html.PasswordFor(m => m.Password,new { @placeholder = "Password*" })@Html.ValidationMessageFor(m => m.Password)</div>
+            
+                <div class="fleft">
+                @Html.TextBoxFor(m => m.StoreName, new { @placeholder = "Store Name*" })@Html.ValidationMessageFor(m => m.StoreName)</div>
+         <div class="clear"></div>
+        <input type="submit" value="Register" onclick="JavascriptFunction();" />
+   
+}
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
 }
 

@@ -89,6 +89,7 @@ namespace nopCommerce.Controllers
                     }
                     else
                     {
+
                         WebSecurity.CreateUserAndAccount(model.UserName, model.Password);
                         WebSecurity.Login(model.UserName, model.Password);
                         new StoreController().SaveStoreName(model.StoreName, model.UserName);
@@ -422,5 +423,13 @@ namespace nopCommerce.Controllers
             }
         }
         #endregion
+
+        [HttpPost]
+        public ActionResult PostMethod()
+        {
+            System.Threading.Thread.Sleep(5000);
+
+            return Json("Message from Post action method.");
+        }
     }
 }
